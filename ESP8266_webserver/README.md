@@ -13,3 +13,7 @@ https://github.com/tttapa/ESP8266/tree/master/Examples/14.%20WebSocket/A-WebSock
 
 Depends on:
 https://github.com/Links2004/arduinoWebSockets
+
+You will find the webinterfasce files in webcontrols/data.
+You can generate an .bin with the SPIFFS information and upload it straight out of the arduino IDE using the ESP8266 sketch data upload plugin found here:  https://github.com/esp8266/arduino-esp8266fs-plugin
+
