@@ -17,12 +17,8 @@ File fsUploadFile;                                    // a File variable to temp
 const char *ssid = "Blimpduino2"; // The name of the Wi-Fi network that will be created
 const char *password = "blimpduino";   // The password required to connect to it, leave blank for an open network
 
-const char *OTAName = "ESP8266";           // A name and a password for the OTA service
-const char *OTAPassword = "esp8266";
-
-#define LED_RED     15            // specify the pins with an RGB LED connected
-#define LED_GREEN   12
-#define LED_BLUE    13
+const char *OTAName = "blimpduino";           // A name and a password for the OTA service
+const char *OTAPassword = "blimpduino";
 
 const char* mdnsName = "blimpduino"; // Domain name for the mDNS responder
 
@@ -53,9 +49,6 @@ const char* mdnsName = "blimpduino"; // Domain name for the mDNS responder
 /*__________________________________________________________SETUP__________________________________________________________*/
 
 void setup() {
-  pinMode(LED_RED, OUTPUT);    // the pins with LEDs connected are outputs
-  pinMode(LED_GREEN, OUTPUT);
-  pinMode(LED_BLUE, OUTPUT);
 
   Serial.begin(115200);        // Start the Serial communication to send messages to the computer
   delay(10);

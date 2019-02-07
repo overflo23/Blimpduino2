@@ -1,0 +1,153 @@
+#controls { 
+ position:relative;
+ background-image:url("/img/background3.jpg"); 
+ height: 459px;
+ width: 612px;
+ margin: auto; 
+}
+
+
+#text {
+color:red;
+position:absolute;
+left:45px;
+top:10px;
+}
+
+
+#channel1 {
+ opacity: 0.8;
+ position:absolute;
+ top:30px;
+ right:40px;
+ width:400px;
+ height:100px;
+ border-radius: 15px;
+}
+
+#channel1 .ui-slider-handle { 
+ top:-5; 
+ position: absolute; 
+ z-index: 2; 
+ width: 20px;
+ height: 110px;
+ cursor: default; 
+}
+
+#channel2 {
+ opacity: 0.8;
+ position:absolute;
+ top:30px;
+ left:40px;
+ height:400px;
+ width:100px;
+ border-radius: 15px
+}
+
+#channel2 .ui-slider-handle {
+ 
+ left:-5;
+ position: absolute;
+ z-index: 2;
+ height: 20px;
+ width: 110px;
+ cursor: default;
+}
+
+
+button {
+opacity:0.8;
+
+}
+
+.up {
+ position: absolute;
+ top:160px;
+ right:40px;
+ width:80px;
+ height: 50px;
+ border-radius: 5px;
+}
+
+.down {
+ position: absolute;
+ top:250px;
+ right:40px;
+ width:80px;
+ height: 50px;
+ border-radius: 5px;
+}
+
+
+.yaw {
+ position: absolute;
+ bottom:40px;
+ left:350px;
+ width:80px;
+ height: 50px;
+ border-radius: 5px;
+}
+
+.alt {
+ position: absolute;
+ bottom:40px;
+ left:250px;
+ width:80px;
+ height: 50px;
+ border-radius: 5px;
+}
+
+.active-button { 
+ border:0;
+ border-bottom:5px solid; 
+ border-color:red; 
+}
+
+.ui-slider-range { 
+  background-color:#1895e5;
+  border-radius: 15px;
+}
+
+.ui-slider{background-color:#626262;}
+
+
+.ui-slider-handle{
+ opacity:1;
+ background-color:rgba(0,0,255);
+ 
+}
+
+
+
+
+
+#esel {
+ position: absolute;
+ bottom:0px;
+ right:0px;
+
+}
+
+
+
+
+
+
+
+
+.ui-slider { position: relative; text-align: left; }
+.ui-slider .ui-slider-handle { position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
+.ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; background-position: 0 0; }
+
+.ui-slider-horizontal { height: .8em; }
+.ui-slider-horizontal .ui-slider-handle { top: -.3em; margin-left: -.6em; }
+.ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; }
+.ui-slider-horizontal .ui-slider-range-min { left: 0; }
+.ui-slider-horizontal .ui-slider-range-max { right: 0; }
+
+.ui-slider-vertical { width: .8em; height: 100px; }
+.ui-slider-vertical .ui-slider-handle { left: -.3em; margin-left: 0; margin-bottom: -.6em; }
+.ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
+.ui-slider-vertical .ui-slider-range-min { bottom: 0; }
+.ui-slider-vertical .ui-slider-range-max { top: 0; }
+

@@ -1,39 +1,174 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>LED Control</title>
-    <link href='main.css' rel='stylesheet' type='text/css'>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="144x144"  href="/favicon-144x144.png">
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.ico">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#00878f">
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'>
-    <script src="WebSocket.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <title>Blimpduino2 Remote</title>
+  <link href="css/style.css" rel="stylesheet" />
+  <link href="css/jquery-ui.min.css" rel="stylesheet">
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/jquery-ui.min.js"></script>
 </head>
-
 <body>
-    <center>
-        <header>
-            <h1>LED Control</h1>
-        </header>
-        <div>
-            <table>
-                <tr>
-                    <td style="width:14.4px; text-align: right">R: </td>
-                    <td><input class="enabled" id="r" type="range" min="0" max="1023" step="1" oninput="sendRGB();" value="0"></td>
-                </tr>
-                <tr>
-                    <td style="width:14.4px; text-align: right">G: </td>
-                    <td><input class="enabled" id="g" type="range" min="0" max="1023" step="1" oninput="sendRGB();" value="0"></td>
-                </tr>
-                <tr>
-                    <td style="width:14.4px; text-align: right">B: </td>
-                    <td><input class="enabled" id="b" type="range" min="0" max="1023" step="1" oninput="sendRGB();" value="0"></td>
-                </tr>
-            </table>
-            <p style="margin:8px 0px"><button id="rainbow" class="button" style="background-color:#999" onclick="rainbowEffect();">Rainbow</button></p>
-        </div>
-    </center>
+
+<div id="controls">
+    <div id="text">Welcome!</div> 
+
+    <div id="channel2" class="slide" value="0" max="500" min="-500"></div> 
+
+
+    <div id="channel1" class="slide" value="0" max="500" min="-500"></div>
+
+<div>
+ <button class="ui-button ui-widget ui-corner-all up">UP</button>
+</div>
+
+<div>
+ <button class="ui-button ui-widget ui-corner-all down">DOWN</button>
+</div>
+
+<div>
+ <button class="ui-button ui-widget ui-corner-all alt">ALT</button>
+</div>
+
+<div>
+ <button class="ui-button ui-widget ui-corner-all yaw">YAW</button>
+</div>
+
+
+</div>
+
+<script>
+
+
+
+// globals used for state of buttons
+alt=0;
+yaw=0;
+
+ch1=0;
+ch2=0;
+ch3=0;
+ch4=0;
+ch5=0;
+ch6=0;
+ch7=0;
+ch8=0;
+
+var connection = new WebSocket('ws://'+location.hostname+':81/', ['arduino']);
+//var connection = new WebSocket('ws://'+location.hostname+':8001/');
+
+
+connection.onopen = function () {
+    console.log('onopen Connect ' + new Date());
+};
+connection.onerror = function (error) {
+    console.log('WebSocket Error ', error);
+};
+connection.onmessage = function (e) {
+    console.log('Server: ', e.data);
+    $("#text").html(e.data);
+};
+connection.onclose = function(){
+    console.log('WebSocket connection closed');
+};
+
+
+function sendData() {
+    var datastr =  ch1 + " " + ch2 + " " + ch3 + " " + ch4 + " " + ch5 + " " + ch6 +  " " + ch7 + " " + ch8;
+    console.log('sending: ' + datastr);
+    connection.send(datastr);
+// sending data again in 200 ms
+    setTimeout(sendData,200);
+}
+
+
+
+
+function setChan(chan,val)
+{
+           if(chan==1) ch1 = val;
+           if(chan==2) ch2 = val;
+           if(chan==3) ch3 = val;
+           if(chan==4) ch4 = val;
+           if(chan==5) ch5 = val;
+           if(chan==6) ch6 = val;
+           if(chan==7) ch7 = val;
+           if(chan==8) ch8 = val;
+   
+//           $(".channels .ch"+chan).html(val ); 
+
+}
+
+
+
+
+$().ready(function(){
+
+$("#channel2").each(function() {
+
+    $(this).slider({
+        value: 0,
+        orientation: "vertical",
+        min: parseInt($(this).attr('min')),
+        max:  parseInt($(this).attr('max')),
+        range: "min",
+        slide: function(event, ui) {
+           setChan(1,ui.value);
+        },
+        stop: function(event, ui) {
+           $(this).slider( "option", "value", 0 );
+           setChan(1,0);
+        }
+    });
+  });
+
+
+$("#channel1").each(function() {
+
+    $(this).slider({
+        value: 0,
+        min: parseInt($(this).attr('min')),
+        max:  parseInt($(this).attr('max')),
+        range: "min",
+        slide: function(event, ui) {
+           setChan(2,ui.value);
+
+        },
+        stop: function(event, ui) {
+           $(this).slider( "option", "value", 0 );
+           setChan(2,0);
+}
+    });
+  });
+
+
+
+
+$( ".up" ).on( "mousedown", function( event, ui ) {setChan(3,"20");} );
+$( ".down" ).on( "mousedown", function( event, ui ) {setChan(3,"-20");} );
+$( ".up" ).on( "mouseup", function( event, ui ) {setChan(3,"0");} );
+$( ".down" ).on( "mouseup", function( event, ui ) {setChan(3,"0");} );
+
+$( ".alt" ).on( "click", function( event, ui ) {
+$(this).toggleClass("active-button");
+if(alt){ alt=0;} else{ alt=1;}
+setChan(5,(alt+yaw));
+} );
+
+$( ".yaw" ).on( "click", function( event, ui ) {
+$(this).toggleClass("active-button");
+if(yaw){ yaw=0;} else{ yaw=2;}
+setChan(5,(alt+yaw));
+} );
+
+
+
+
+setTimeout(sendData,100);
+
+}); // on ().ready
+
+</script>
+
 </body>
 </html>

@@ -5,9 +5,7 @@ void startOTA() { // Start the OTA service
 
   ArduinoOTA.onStart([]() {
     Serial.println("Start");
-    digitalWrite(LED_RED, 0);    // turn off the LEDs
-    digitalWrite(LED_GREEN, 0);
-    digitalWrite(LED_BLUE, 0);
+
   });
   ArduinoOTA.onEnd([]() {
     Serial.println("\r\nEnd");
