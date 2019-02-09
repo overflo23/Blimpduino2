@@ -9,7 +9,7 @@ void startServer() { // Start a HTTP server with a file read handler and an uplo
                                               // and check if the file exists
 
   server.begin();                             // start the HTTP server
-  Serial.println("HTTP server started.");
+  if(DEBUG) Serial.println("HTTP server started.");
 }
 
 
@@ -37,7 +37,7 @@ void handleNotFound(){ // if the requested file or page doesn't exist, return a 
 }
 
 bool handleFileRead(String path) { // send the right file to the client (if it exists)
-  Serial.println("handleFileRead: " + path);
+  if(DEBUG) Serial.println("handleFileRead: " + path);
   if (path.endsWith("/")) path += "index.html";          // If a folder is requested, send the index file
   String contentType = getContentType(path);             // Get the MIME type
   String pathWithGz = path + ".gz";
@@ -45,12 +45,31 @@ bool handleFileRead(String path) { // send the right file to the client (if it e
     if (SPIFFS.exists(pathWithGz))                         // If there's a compressed version available
       path += ".gz";                                         // Use the compressed verion
     File file = SPIFFS.open(path, "r");                    // Open the file
+
+    char buf[1024];
+    int siz = file.size();
+    
+
+    /* 
+       //supposed fix, turns out this was not broken, it was the compiler settings /lowlevel ip stack.
+       
+    while(siz > 0) {
+      size_t len = std::min((int)(sizeof(buf) - 1), siz);
+      file.read((uint8_t *)buf, len);
+      server.client().write((const char*)buf, len);
+      siz -= len;
+      if(DEBUG) Serial.print(buf);
+    }
+    */
+
+    
+    
     size_t sent = server.streamFile(file, contentType);    // Send it to the client
     file.close();                                          // Close the file again
-    Serial.println(String("\tSent file: ") + path);
+    if(DEBUG) Serial.println(String("\tSent file: ") + path);
     return true;
   }
-  Serial.println(String("\tFile Not Found: ") + path);   // If the file doesn't exist, return false
+  if(DEBUG) Serial.println(String("\tFile Not Found: ") + path);   // If the file doesn't exist, return false
   return false;
 }
 
@@ -65,7 +84,10 @@ void handleFileUpload(){ // upload a new file to the SPIFFS
       if(SPIFFS.exists(pathWithGz))                      // version of that file must be deleted (if it exists)
          SPIFFS.remove(pathWithGz);
     }
-    Serial.print("handleFileUpload Name: "); Serial.println(path);
+    if(DEBUG) { 
+      Serial.print("handleFileUpload Name: "); 
+      Serial.println(path);
+    }
     fsUploadFile = SPIFFS.open(path, "w");            // Open the file for writing in SPIFFS (create if it doesn't exist)
     path = String();
   } else if(upload.status == UPLOAD_FILE_WRITE){
@@ -74,7 +96,7 @@ void handleFileUpload(){ // upload a new file to the SPIFFS
   } else if(upload.status == UPLOAD_FILE_END){
     if(fsUploadFile) {                                    // If the file was successfully created
       fsUploadFile.close();                               // Close the file again
-      Serial.print("handleFileUpload Size: "); Serial.println(upload.totalSize);
+      if(DEBUG) Serial.print("handleFileUpload Size: "); if(DEBUG) Serial.println(upload.totalSize);
       server.sendHeader("Location","/success.html");      // Redirect the client to the success page
       server.send(303);
     } else {
@@ -92,15 +114,17 @@ void handleFileUpload(){ // upload a new file to the SPIFFS
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) { // When a WebSocket message is received
   switch (type) {
     case WStype_DISCONNECTED:             // if the websocket is disconnected
-      Serial.printf("[%u] Disconnected!\n", num);
+      if(DEBUG) Serial.printf("[%u] Disconnected!\n", num);
       break;
     case WStype_CONNECTED: {              // if a new websocket connection is established
         IPAddress ip = webSocket.remoteIP(num);
-        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+        if(DEBUG) Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
       }
       break;
     case WStype_TEXT:                     // if new text data is received
-      Serial.printf("[%u] get Text: %s\n", num, payload);
+      if(DEBUG) Serial.printf("[%u] get Text: %s\n", num, payload);
+
+      /*
       if (payload[0] == '#') {            // we get RGB data
         uint32_t rgb = (uint32_t) strtol((const char *) &payload[1], NULL, 16);   // decode rgb data
         int r = ((rgb >> 20) & 0x3FF);                     // 10 bits per color, so R: bits 20-29
@@ -109,6 +133,19 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
 
 
       } 
+      */
       break;
   }
 }
+
+
+void serialWebsocketBridge()
+{
+  if(Serial.available() >0)
+  {
+   if(DEBUG) Serial.println("got some text, sending to websocket"); 
+   String serialdata=Serial.readStringUntil('\n');
+   webSocket.sendTXT(0,serialdata.c_str(),serialdata.length()+1);
+  }
+}
+

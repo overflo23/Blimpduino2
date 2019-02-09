@@ -1,3 +1,23 @@
+/*
+ * oh sweet jesus, what a clusterfuck.
+ * 
+ * i was working on this code for 4 days straight because the wifi was instable 
+ * and it looked like the code to send files form spiffs was broken.
+ * turns out i had to change the compiler settings to:
+ * 
+ * Flash size 4M (1M SPIFFS)
+ * Debug Port: disabled
+ * Debug Level: none 
+ * Iwip variant: 2 (higher bandwidth)   <- important!
+ * vtables: "flash"
+ * cpu freq: 160 mhz
+ * exceptions: disabled
+ * upload speed: 921600
+ * erase flash: erase all flash contents
+ * 
+ */
+
+#define DEBUG 1   //set to 0 for live usage. this outputs all kind of information on the serial.
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
@@ -6,6 +26,18 @@
 #include <ESP8266mDNS.h>
 #include <FS.h>
 #include <WebSocketsServer.h>
+
+
+// for captive portal
+#include <DNSServer.h>
+
+
+
+// DNS server
+const byte DNS_PORT = 53;
+DNSServer dnsServer;
+
+
 
 ESP8266WiFiMulti wifiMulti;       // Create an instance of the ESP8266WiFiMulti class, called 'wifiMulti'
 
@@ -24,21 +56,9 @@ const char* mdnsName = "blimpduino"; // Domain name for the mDNS responder
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* Soft AP network parameters */    
+IPAddress apIP(192, 168, 4, 1);
+IPAddress netMsk(255, 255, 255, 0);
 
 
 
@@ -50,11 +70,19 @@ const char* mdnsName = "blimpduino"; // Domain name for the mDNS responder
 
 void setup() {
 
+
+  // TODO how fast are arduino and esp connected on blimpduino?? 9600, 115200 ?!
+
+  
   Serial.begin(115200);        // Start the Serial communication to send messages to the computer
   delay(10);
-  Serial.println("\r\n");
+  if(DEBUG) Serial.println("\r\n");
+
+
 
   startWiFi();                 // Start a Wi-Fi access point, and try to connect to some given access points. Then wait for either an AP or STA connection
+
+  startDns();
   
   startOTA();                  // Start the OTA service
   
@@ -71,13 +99,13 @@ void setup() {
 /*__________________________________________________________LOOP__________________________________________________________*/
 
 
-unsigned long prevMillis = millis();
-int hue = 0;
 
 void loop() {
   webSocket.loop();                           // constantly check for websocket events
   server.handleClient();                      // run the server
+  serialWebsocketBridge();
   ArduinoOTA.handle();                        // listen for OTA events
+  dnsServer.processNextRequest();  
 }
 
 
@@ -87,15 +115,15 @@ void loop() {
 
 void startSPIFFS() { // Start the SPIFFS and list all contents
   SPIFFS.begin();                             // Start the SPI Flash File System (SPIFFS)
-  Serial.println("SPIFFS started. Contents:");
+  if(DEBUG) Serial.println("SPIFFS started. Contents:");
   {
     Dir dir = SPIFFS.openDir("/");
     while (dir.next()) {                      // List the file system contents
       String fileName = dir.fileName();
       size_t fileSize = dir.fileSize();
-      Serial.printf("\tFS File: %s, size: %s\r\n", fileName.c_str(), formatBytes(fileSize).c_str());
+      if(DEBUG) Serial.printf("\tFS File: %s, size: %s\r\n", fileName.c_str(), formatBytes(fileSize).c_str());
     }
-    Serial.printf("\n");
+    if(DEBUG) Serial.printf("\n");
   }
 }
 
