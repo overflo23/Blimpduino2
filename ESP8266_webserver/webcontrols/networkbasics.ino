@@ -63,8 +63,8 @@ void startWiFi() { // Start a Wi-Fi access point, and try to connect to some giv
 
 /*
 
-  wifiMulti.addAP("pewpew", "deadbeefac");
-  wifiMulti.addAP("pewpew_office", "deadbeefac");
+  wifiMulti.addAP("wlan1", "password");
+  wifiMulti.addAP("wlan2", "password");
 
   if(DEBUG) Serial.println("Connecting");
   while (wifiMulti.run() != WL_CONNECTED && WiFi.softAPgetStationNum() < 1) {  // Wait for the Wi-Fi to connect
