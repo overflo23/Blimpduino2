@@ -562,6 +562,7 @@ void MPU6050_setup()
   uint8_t c;
 
   error = MPU6050_read(MPU6050_WHO_AM_I, &c, 1);
+  
   SerialUSB.print("WHO_AM_I : ");
   SerialUSB.print(c, HEX);
   SerialUSB.print(", error = ");
