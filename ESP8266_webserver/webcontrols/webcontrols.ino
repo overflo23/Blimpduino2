@@ -17,7 +17,7 @@
  * 
  */
 
-#define DEBUG 1   //set to 0 for live usage. this outputs all kind of information on the serial.
+#define DEBUG 0   //set to 0 for live usage. this outputs all kind of information on the serial.
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
@@ -46,7 +46,7 @@ WebSocketsServer webSocket(81);    // create a websocket server on port 81
 
 File fsUploadFile;                                    // a File variable to temporarily store the received file
 
-const char *ssid = "Blimpduino2"; // The name of the Wi-Fi network that will be created
+const char *ssid = "OLLEDROHNE"; // The name of the Wi-Fi network that will be created
 const char *password = "blimpduino";   // The password required to connect to it, leave blank for an open network
 
 const char *OTAName = "blimpduino";           // A name and a password for the OTA service
@@ -71,12 +71,11 @@ IPAddress netMsk(255, 255, 255, 0);
 void setup() {
 
 
-  // TODO how fast are arduino and esp connected on blimpduino?? 9600, 115200 ?!
 
   
   Serial.begin(115200);        // Start the Serial communication to send messages to the computer
-  delay(10);
-  if(DEBUG) Serial.println("\r\n");
+  delay(1000);
+  Serial.println("\r\nstarting up.. \r\n");
 
 
 
@@ -142,3 +141,31 @@ String formatBytes(size_t bytes) { // convert sizes in bytes to KB and MB
     return String(bytes / 1024.0 / 1024.0) + "MB";
   }
 }
+
+
+
+
+/** Is this an IP? */
+boolean isIp(String str) {
+  for (size_t i = 0; i < str.length(); i++) {
+    int c = str.charAt(i);
+    if (c != '.' && (c < '0' || c > '9')) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/** IP to String? */
+String toStringIp(IPAddress ip) {
+  String res = "";
+  for (int i = 0; i < 3; i++) {
+    res += String((ip >> (8 * i)) & 0xFF) + ".";
+  }
+  res += String(((ip >> 8 * 3)) & 0xFF);
+  return res;
+}
+
+
+
+

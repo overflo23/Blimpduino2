@@ -61,13 +61,10 @@ void startWiFi() { // Start a Wi-Fi access point, and try to connect to some giv
   if(DEBUG) Serial.print(ssid);
   if(DEBUG) Serial.println("\" started\r\n");
 
-
-
-
- 
 /*
-  wifiMulti.addAP("ssid_from_AP_2", "your_password_for_AP_2");
-  wifiMulti.addAP("ssid_from_AP_3", "your_password_for_AP_3");
+
+  wifiMulti.addAP("pewpew", "deadbeefac");
+  wifiMulti.addAP("pewpew_office", "deadbeefac");
 
   if(DEBUG) Serial.println("Connecting");
   while (wifiMulti.run() != WL_CONNECTED && WiFi.softAPgetStationNum() < 1) {  // Wait for the Wi-Fi to connect
@@ -84,7 +81,8 @@ void startWiFi() { // Start a Wi-Fi access point, and try to connect to some giv
     if(DEBUG) Serial.print("Station connected to ESP8266 AP");
   }
 
-  */
+
 
   if(DEBUG) Serial.println("\r\n");
+*/
 }

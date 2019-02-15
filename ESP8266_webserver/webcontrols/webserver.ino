@@ -31,10 +31,46 @@ String getContentType(String filename) { // determine the filetype of a given fi
 /*__________________________________________________________SERVER_HANDLERS__________________________________________________________*/
 
 void handleNotFound(){ // if the requested file or page doesn't exist, return a 404 not found error
+/*
+  if (captivePortal()) { // If caprive portal redirect instead of displaying the page.
+    return;
+  }
+*/
+
+  
   if(!handleFileRead(server.uri())){          // check if the file exists in the flash memory (SPIFFS), if so, send it
     server.send(404, "text/plain", "404: File Not Found");
   }
 }
+
+
+
+
+
+
+boolean captivePortal() {
+  if (!isIp(server.hostHeader()) && server.hostHeader() != (String(mdnsName) + ".local")) {
+    Serial.println("Request redirected to captive portal");
+    server.sendHeader("Location", String("http://") + toStringIp(server.client().localIP()), true);
+    server.send(302, "text/plain", "");   // Empty content inhibits Content-length header so we have to close the socket ourselves.
+    server.client().stop(); // Stop is needed because we sent no content length
+    return true;
+  }
+  return false;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 bool handleFileRead(String path) { // send the right file to the client (if it exists)
   if(DEBUG) Serial.println("handleFileRead: " + path);
@@ -122,7 +158,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
       }
       break;
     case WStype_TEXT:                     // if new text data is received
-      if(DEBUG) Serial.printf("[%u] get Text: %s\n", num, payload);
+      Serial.printf("# %s\n", payload);
 
       /*
       if (payload[0] == '#') {            // we get RGB data

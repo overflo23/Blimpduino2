@@ -64,9 +64,10 @@ function resizeControls()
 ww= jQuery(window).width();
 wh= jQuery(window).height();
 
-
+/*
 $("#fullscreen").width(ww);
 $("#fullscreen").height(wh);
+*/
 
 maxv=450;
 minv=300;
@@ -125,7 +126,7 @@ document.addEventListener("fullscreenchange", function (event) {
     }
 });
 
-
+/*
 
 var isMobile = false; //initiate as false
 // device detection
@@ -150,7 +151,7 @@ $( "#fullscreen" ).on( "click", function( event, ui ) {
  resizeControls();
 } );
 
-
+*/
 
 
 
@@ -161,12 +162,12 @@ $( "#down" ).on( "touchend", function( event, ui ) {setChan(3,"0");} );
 
 
 
-
+/*
 }
 else
 {
  // not a mobile device
-
+*/
 $( "#up" ).on( "mousedown", function( event, ui ) {setChan(3,"20");} );
 $( "#down" ).on( "mousedown", function( event, ui ) {setChan(3,"-20");} );
 $( "#up" ).on( "mouseup", function( event, ui ) {setChan(3,"0");} );
@@ -174,10 +175,10 @@ $( "#down" ).on( "mouseup", function( event, ui ) {setChan(3,"0");} );
 
 
 
-
+/*
  $( "#fullscreen" ).hide();
 }
-
+*/
 
 // check orientation
 
